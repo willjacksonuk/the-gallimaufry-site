@@ -1,0 +1,41 @@
+---
+import { getPodcastEpisodes } from "../../utils/getPodcastEpisodes";
+import BlogPost from "../../layouts/BlogPost.astro";
+import FormattedDate from "../../components/FormattedDate.astro"; // ✅ this was missing
+
+export async function getStaticPaths() {
+    const episodes = await getPodcastEpisodes();
+    return episodes.map((ep) => ({
+        params: { slug: ep.slug },
+    }));
+}
+
+const { slug } = Astro.params;
+const episodes = await getPodcastEpisodes();
+const episode = episodes.find((ep) => ep.slug === slug);
+
+if (!episode) {
+    throw new Error(`Episode not found: ${slug}`);
+}
+---
+
+<BlogPost>
+    <img
+        width={720}
+        height={360}
+        src={episode.heroImage}
+        alt={`Cover image for ${episode.title}`}
+        loading="lazy"
+    />
+    <h1>{episode.title}</h1>
+    <FormattedDate date={episode.pubDate} />
+    <p>
+        {
+            episode.description.replace(
+                /^Send us your messages or topic ideas\. /,
+                "",
+            )
+        }
+    </p>
+    <audio controls src={episode.audioUrl}></audio>
+</BlogPost>

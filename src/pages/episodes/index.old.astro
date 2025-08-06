@@ -1,0 +1,37 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import { getPodcastEpisodes } from "../../utils/getPodcastEpisodes";
+import FormattedDate from "../../components/FormattedDate.astro"; // ✅ this was missing
+
+const episodes = await getPodcastEpisodes();
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </head>
+    <body>
+        <Header />
+        <main>
+            <h1>The Gallimaufry History Podcast</h1>
+            <p>Living crafted in the basement of a carpet shop.</p>
+            {
+                episodes.map((ep) => (
+                    <div class="episode-list-container">
+                        <div class="episode-list-title">
+                            <a href={`/episodes/${ep.slug}`}>{ep.title}</a>{" "}
+                        </div>
+                        <div class="episode-list-date">
+                            <FormattedDate date={ep.pubDate} />
+                        </div>
+                    </div>
+                ))
+            }
+        </main>
+        <Footer />
+    </body>
+</html>
